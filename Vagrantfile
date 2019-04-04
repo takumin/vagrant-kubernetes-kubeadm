@@ -85,6 +85,8 @@ Vagrant.configure('2') do |config|
 
   # Libvirt Provider Configuration
   config.vm.provider :libvirt do |libvirt|
+    # CPU
+    libvirt.cpus = 2
     # Memory
     libvirt.memory = 4096
     # Monitor
@@ -124,11 +126,13 @@ Vagrant.configure('2') do |config|
 
   # Master
   config.vm.define :master do |domain|
+    domain.vm.hostname = 'vagrant-master'
   end
 
   # Worker
   (1..5).each do |i|
-    config.vm.define "worker_#{i}" do |domain|
+    config.vm.define "worker-#{i}" do |domain|
+      domain.vm.hostname = "vagrant-worker-#{i}"
     end
   end
 end
