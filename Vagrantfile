@@ -18,6 +18,11 @@ MITAMAE_COOKBOOKS = [
 require 'yaml'
 YAML.dump({
   'docker' => {
+    'config' => {
+      'exec-opts' => [
+        'native.cgroupdriver=systemd',
+      ],
+    },
     'compose' => {
       'dest_dir' => '/vagrant/vendor/docker-compose',
     },

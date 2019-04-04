@@ -38,7 +38,7 @@ apt_repository 'Docker Repository' do
       ],
     },
   ]
-  notifies :run, "execute[apt-get update]", :immediately
+  notifies :run, 'execute[apt-get update]', :immediately
 end
 
 execute 'apt-get update' do
@@ -62,7 +62,7 @@ cmdline = {
 cmdline.each do |key, val|
   execute "perl -pi -e 's@^(GRUB_CMDLINE_LINUX_DEFAULT=(?!.*#{key})\"[^\"]+)(\".*)@\\1 #{key}=#{val}\\2@' /etc/default/grub" do
     not_if "test ! -e /etc/default/grub || grep -qs '^GRUB_CMDLINE_LINUX_DEFAULT=.*#{key}=#{val}.*' /etc/default/grub"
-    notifies :run, "execute[update-grub]"
+    notifies :run, 'execute[update-grub]'
   end
 end
 
@@ -84,15 +84,15 @@ remote_file '/etc/systemd/system/docker.service.d/environment.conf' do
   owner 'root'
   group 'root'
   mode  '0644'
-  notifies :run, "execute[systemctl daemon-reload]"
-  notifies :restart, "service[docker.service]"
+  notifies :run, 'execute[systemctl daemon-reload]'
+  notifies :restart, 'service[docker.service]'
 end
 
 template '/etc/default/docker' do
   owner 'root'
   group 'root'
   mode  '0644'
-  notifies :restart, "service[docker.service]"
+  notifies :restart, 'service[docker.service]'
 end
 
 if node[:docker][:config] != {} then
@@ -101,7 +101,7 @@ if node[:docker][:config] != {} then
     group 'root'
     mode '0600'
     content JSON.pretty_generate(node[:docker][:config])
-    notifies :restart, 'service[serf.service]'
+    notifies :restart, 'service[docker.service]'
   end
 end
 
