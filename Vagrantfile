@@ -12,6 +12,7 @@ MITAMAE_COOKBOOKS = [
   'cookbooks/sudo/default.rb',
   'cookbooks/require/default.rb',
   'cookbooks/docker/default.rb',
+  'cookbooks/kubernetes/default.rb',
 ]
 # MItamae Variables
 require 'yaml'
@@ -110,6 +111,7 @@ Vagrant.configure('2') do |config|
       'UBUNTU_PROXY' => ENV['UBUNTU_PROXY'],
       'UBUNTU_MIRROR' => ENV['UBUNTU_MIRROR'],
       'DOCKER_MIRROR' => ENV['DOCKER_MIRROR'],
+      'KUBERNETES_MIRROR' => ENV['KUBERNETES_MIRROR'],
     }
     shell.inline = <<~BASH
       if ! mitamae version > /dev/null 2>&1; then
