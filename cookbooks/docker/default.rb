@@ -10,6 +10,9 @@ end
 unless node[:docker][:compose].kind_of?(Hash) then
   node[:docker][:compose] = {}
 end
+unless node[:docker][:compose][:dest_dir].kind_of?(String) then
+  node[:docker][:compose][:dest_dir] = '/tmp'
+end
 unless node[:docker][:compose][:prefix].kind_of?(String) then
   node[:docker][:compose][:prefix] = '/usr/local'
 end
@@ -134,13 +137,17 @@ end
 # Compose
 #
 
-kern = run_command(['uname', '-s']).stdout.gsub(/\r\n|\r|\n|\s|\t/, '')
-arch = run_command(['uname', '-m']).stdout.gsub(/\r\n|\r|\n|\s|\t/, '')
-
-http_request "#{node[:docker][:compose][:prefix]}/bin/docker-compose" do
-  url "https://github.com/docker/compose/releases/download/#{compose_version}/docker-compose-#{kern}-#{arch}"
-  not_if "test -e #{node[:docker][:compose][:prefix]}/bin/docker-compose || echo #{compose_sha256sum} #{node[:docker][:compose][:prefix]}/bin/docker-compose | sha256sum -c --ignore-missing --status"
+http_request "#{node[:docker][:compose][:dest_dir]}/docker-compose" do
+  url "https://github.com/docker/compose/releases/download/#{compose_version}/docker-compose-#{node[:kernel][:name]}-#{node[:kernel][:machine]}"
+  not_if [
+    "test -e #{node[:docker][:compose][:prefix]}/bin/docker-compose",
+    "echo #{compose_sha256sum} #{node[:docker][:compose][:prefix]}/bin/docker-compose | sha256sum -c --ignore-missing --status",
+  ].join(' || ')
   check_error true
+end
+
+execute "install #{node[:docker][:compose][:dest_dir]}/docker-compose #{node[:docker][:compose][:prefix]}/bin/docker-compose" do
+  not_if "test -e #{node[:docker][:compose][:prefix]}/bin/docker-compose"
 end
 
 file "#{node[:docker][:compose][:prefix]}/bin/docker-compose" do

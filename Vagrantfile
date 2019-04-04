@@ -3,6 +3,9 @@
 # MItamae Github Release Tag
 MITAMAE_RELEASE_TAG ||= 'v1.7.4'
 
+# Docker Compose Github Release Tag
+DOCKER_COMPOSE_RELEASE_TAG ||= '1.24.0'
+
 # MItamae CookBooks
 MITAMAE_COOKBOOKS = [
   'cookbooks/apt/default.rb',
@@ -13,6 +16,11 @@ MITAMAE_COOKBOOKS = [
 # MItamae Variables
 require 'yaml'
 YAML.dump({
+  'docker' => {
+    'compose' => {
+      'dest_dir' => '/vagrant/vendor/docker-compose',
+    },
+  },
 }, File.open(File.join(File.expand_path(__dir__), 'vendor', 'mitamae.yaml'), 'w'))
 
 # Download Require Binary
@@ -22,6 +30,12 @@ require 'open-uri'
     :name => 'mitamae',
     :urls => [
       "https://github.com/itamae-kitchen/mitamae/releases/download/#{MITAMAE_RELEASE_TAG}/mitamae-x86_64-linux",
+    ],
+  },
+  {
+    :name => 'docker-compose',
+    :urls => [
+      "https://github.com/docker/compose/releases/download/#{DOCKER_COMPOSE_RELEASE_TAG}/docker-compose-Linux-x86_64",
     ],
   },
 ].each {|item|
