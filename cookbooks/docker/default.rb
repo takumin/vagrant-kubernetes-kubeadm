@@ -137,20 +137,25 @@ end
 # Compose
 #
 
-http_request "#{node[:docker][:compose][:dest_dir]}/docker-compose" do
-  url "https://github.com/docker/compose/releases/download/#{compose_version}/docker-compose-#{node[:kernel][:name]}-#{node[:kernel][:machine]}"
+dest = node[:docker][:compose][:dest_dir]
+kern = node[:kernel][:name]
+arch = node[:kernel][:machine]
+pref = node[:docker][:compose][:prefix]
+
+http_request "#{dest}/docker-compose-#{kern}-#{arch}" do
+  url "https://github.com/docker/compose/releases/download/#{compose_version}/docker-compose-#{kern}-#{arch}"
   not_if [
-    "test -e #{node[:docker][:compose][:prefix]}/bin/docker-compose",
-    "echo #{compose_sha256sum} #{node[:docker][:compose][:prefix]}/bin/docker-compose | sha256sum -c --ignore-missing --status",
+    "test -e #{pref}/bin/docker-compose",
+    "echo #{compose_sha256sum} #{pref}/bin/docker-compose | sha256sum -c --ignore-missing --status",
   ].join(' || ')
   check_error true
 end
 
-execute "install #{node[:docker][:compose][:dest_dir]}/docker-compose #{node[:docker][:compose][:prefix]}/bin/docker-compose" do
-  not_if "test -e #{node[:docker][:compose][:prefix]}/bin/docker-compose"
+execute "install #{dest}/docker-compose-#{kern}-#{arch} #{pref}/bin/docker-compose" do
+  not_if "test -e #{pref}/bin/docker-compose"
 end
 
-file "#{node[:docker][:compose][:prefix]}/bin/docker-compose" do
+file "#{pref}/bin/docker-compose" do
   owner 'root'
   group 'root'
   mode '0755'
