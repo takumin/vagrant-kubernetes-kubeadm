@@ -14,6 +14,7 @@ MITAMAE_COOKBOOKS = [
   'cookbooks/docker/default.rb',
   'cookbooks/kubernetes/default.rb',
 ]
+
 # MItamae Variables
 require 'yaml'
 YAML.dump({
